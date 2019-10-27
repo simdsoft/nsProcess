@@ -252,6 +252,10 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
   BOOL bFound=FALSE;
   BOOL bSuccess=FALSE;
   BOOL bFailed=FALSE;
+  DWORD dwCurrentProcessID = 0;
+
+  // Gets Current Process ID
+  dwCurrentProcessID = GetCurrentProcessId();
 
   // First check what version of Windows we're in
   osvi.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
@@ -321,8 +325,7 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
 #else
 	    WideCharToMultiByte(CP_ACP, 0, spiCount->pszProcessName, -1, szName, MAX_PATH, NULL, NULL);
 #endif		
-
-        if (!lstrcmpi(szName, szProcessName))
+        if (spiCount->dwProcessID != dwCurrentProcessID && !lstrcmpi(szName, szProcessName))
         {
           // Process found
           bFound=TRUE;
@@ -380,7 +383,7 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
 			lstrcpyn(szName, pName, MAX_PATH);
 #endif		
 
-            if (!lstrcmpi(szName, szProcessName))
+            if (pe.th32ProcessID != dwCurrentProcessID && !lstrcmpi(szName, szProcessName))
             {
               // Process found
               bFound=TRUE;
