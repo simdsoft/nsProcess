@@ -89,6 +89,11 @@ TCHAR szBuf[NSIS_MAX_STRLEN];
 /* Funtions prototypes and macros */
 int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose);
 
+static BOOL IsMainWindow(HWND hWnd)
+{   
+	return GetWindow(hWnd, GW_OWNER) == (HWND)0 && IsWindowVisible(hWnd);
+}
+
 /* NSIS functions code */
 void __declspec(dllexport) _FindProcess(HWND hwndParent, int string_size,
                                       TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
@@ -139,16 +144,16 @@ BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
   return TRUE;
 }
 
-BOOL CALLBACK EnumWindowsProc(          HWND hwnd,
+BOOL CALLBACK EnumWindowsProc(HWND hwnd,
     LPARAM lParam
 )
 {
 	HANDLE *data = lParam;
 	DWORD pid;
 	GetWindowThreadProcessId(hwnd, &pid);
-	if (pid == data[0])
+	if (pid == data[0] && IsMainWindow(hwnd))
 	{
-		PostMessage(data[1], WM_CLOSE, 0, 0);
+		PostMessage(hwnd, WM_CLOSE, 0, 0);
 		data[1] = hwnd;
 	}
 	return TRUE;
