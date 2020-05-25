@@ -148,10 +148,10 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,
     LPARAM lParam
 )
 {
-	HANDLE *data = lParam;
+	HANDLE *data = (HANDLE*)lParam;
 	DWORD pid;
 	GetWindowThreadProcessId(hwnd, &pid);
-	if (pid == data[0] && IsMainWindow(hwnd))
+	if ((HANDLE*)pid == data[0] && IsMainWindow(hwnd))
 	{
 		PostMessage(hwnd, WM_CLOSE, 0, 0);
 		data[1] = hwnd;
@@ -167,11 +167,11 @@ void NiceTerminate(DWORD id, BOOL bClose, BOOL *bSuccess, BOOL *bFailed)
   BOOL bDone = FALSE;
   if (hProc=OpenProcess(PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION | SYNCHRONIZE, FALSE, id))
   {
-	data[0] = id;
+	data[0] = (HANDLE)id;
 	data[1] = NULL;
 
 	if (bClose)
-		EnumWindows(EnumWindowsProc, data);
+		EnumWindows(EnumWindowsProc, (LPARAM)&data[0]);
 	if (data[1] != NULL)
 	{	  
 	  if (GetExitCodeProcess(hProc,&ec) && ec == STILL_ACTIVE)
@@ -252,7 +252,7 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
   TCHAR szName[MAX_PATH];
   OSVERSIONINFO osvi;
   HMODULE hLib;
-  HANDLE hProc;
+  // HANDLE hProc;
   ULONG uError;
   BOOL bFound=FALSE;
   BOOL bSuccess=FALSE;
@@ -288,7 +288,7 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
       {
         while (1)
         {
-          if (spi=LocalAlloc(LMEM_FIXED, dwSize))
+          if (spi=(SYSTEM_PROCESS_INFO*)LocalAlloc(LMEM_FIXED, dwSize))
           {
             uError=(*NtQuerySystemInformationPtr)(SystemProcessInformation, spi, dwSize, &dwData);
 
@@ -349,8 +349,14 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
   }
   else
   {
+#if defined(UNICODE)
+#undef Process32First
+#undef Process32Next
+#undef PROCESSENTRY32
+#undef PPROCESSENTRY32
+#undef LPPROCESSENTRY32
+#endif
     // Win95/98/ME
-
     PROCESSENTRY32 pe;
     char *pName;
     HANDLE hSnapShot;
@@ -359,7 +365,7 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
     BOOL (WINAPI *Process32FirstPtr)(HANDLE, LPPROCESSENTRY32);
     BOOL (WINAPI *Process32NextPtr)(HANDLE, LPPROCESSENTRY32);
 
-    if (hLib=LoadLibraryA("KERNEL32.DLL"))
+    if (hLib=LoadLibrary(_TEXT("KERNEL32.DLL")))
     {
       CreateToolhelp32SnapshotPtr=(HANDLE(WINAPI *)(DWORD, DWORD)) GetProcAddress(hLib, "CreateToolhelp32Snapshot");
       Process32FirstPtr=(BOOL(WINAPI *)(HANDLE, LPPROCESSENTRY32)) GetProcAddress(hLib, "Process32First");
@@ -378,7 +384,7 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
           while (bResult)
           {
             //Get file name
-            for (pName=pe.szExeFile + lstrlen(pe.szExeFile) - 1; *pName != '\\' && *pName != '\0'; --pName);
+            for (pName=pe.szExeFile + lstrlenA(pe.szExeFile) - 1; *pName != '\\' && *pName != '\0'; --pName);
 
 			++pName;
 
