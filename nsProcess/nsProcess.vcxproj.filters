@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d954431a-c29b-4c6f-a4bd-14703599718a}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{0288bee8-9623-445c-9724-de0f21d67d6a}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{6a350ccd-4674-4d22-adcc-e3a524ecd7b2}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="pluginapi">
+      <UniqueIdentifier>{9d160ab9-1006-42e0-a9be-1183d9a4c4dc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="nsProcess.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nsis\pluginapi.c">
+      <Filter>pluginapi</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\nsis\api.h">
+      <Filter>pluginapi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nsis\nsis_tchar.h">
+      <Filter>pluginapi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nsis\pluginapi.h">
+      <Filter>pluginapi</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

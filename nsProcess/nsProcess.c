@@ -1,5 +1,5 @@
 /*****************************************************************
- *               nsProcess NSIS plugin v1.5                      *
+ *               nsProcess NSIS plugin v1.6.3                    *
  *                                                               *
  * 2006 Shengalts Aleksander aka Instructor (Shengalts@mail.ru)  *
  *                                                               *
@@ -13,8 +13,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <Tlhelp32.h>
-//#include "ConvFunc.h"
-#include "pluginapi.h"
+#include "nsis/pluginapi.h"
 
 /* Defines */
 #define NSIS_MAX_STRLEN 1024
