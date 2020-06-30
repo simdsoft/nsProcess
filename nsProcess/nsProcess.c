@@ -1,5 +1,5 @@
 /*****************************************************************
- *               nsProcess NSIS plugin v1.6.3                    *
+ *               nsProcess NSIS plugin v1.6.4                    *
  *                                                               *
  * 2006 Shengalts Aleksander aka Instructor (Shengalts@mail.ru)  *
  *                                                               *
@@ -249,7 +249,7 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
 //                          - Removed memory leak as suggested by Daniel Vanesse
 {
   TCHAR szName[MAX_PATH];
-  OSVERSIONINFO osvi;
+  OSVERSIONINFOEX osvi = { 0 };
   HMODULE hLib;
   // HANDLE hProc;
   ULONG uError;
@@ -262,12 +262,19 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
   dwCurrentProcessID = GetCurrentProcessId();
 
   // First check what version of Windows we're in
-  osvi.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
-  if (!GetVersionEx(&osvi)) return 604;
+  osvi.dwOSVersionInfoSize = sizeof(osvi);
+  osvi.dwPlatformId = VER_PLATFORM_WIN32_NT;
+  ULONGLONG maskCondition = VerSetConditionMask(0, VER_PLATFORMID, VER_EQUAL);
+  if (!VerifyVersionInfo(&osvi, VER_PLATFORMID, maskCondition)) {
+      osvi.dwPlatformId = VER_PLATFORM_WIN32_WINDOWS;
+      if (!VerifyVersionInfo(&osvi, VER_PLATFORMID, maskCondition))
+          return 605;
+  }
+  // if (!GetVersionEx(&osvi)) return 604;
 
-  if (osvi.dwPlatformId != VER_PLATFORM_WIN32_NT &&
-      osvi.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS)
-    return 605;
+  // if (osvi.dwPlatformId != VER_PLATFORM_WIN32_NT &&
+  //     osvi.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS)
+  //   return 605;
 
   if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT)
   {
