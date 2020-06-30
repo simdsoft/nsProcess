@@ -257,6 +257,7 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
   BOOL bSuccess=FALSE;
   BOOL bFailed=FALSE;
   DWORD dwCurrentProcessID = 0;
+  ULONGLONG maskCondition = 0;
 
   // Gets Current Process ID
   dwCurrentProcessID = GetCurrentProcessId();
@@ -264,7 +265,7 @@ int FIND_PROC_BY_NAME(TCHAR *szProcessName, BOOL bTerminate, BOOL bClose)
   // First check what version of Windows we're in
   osvi.dwOSVersionInfoSize = sizeof(osvi);
   osvi.dwPlatformId = VER_PLATFORM_WIN32_NT;
-  ULONGLONG maskCondition = VerSetConditionMask(0, VER_PLATFORMID, VER_EQUAL);
+  maskCondition = VerSetConditionMask(0, VER_PLATFORMID, VER_EQUAL);
   if (!VerifyVersionInfo(&osvi, VER_PLATFORMID, maskCondition)) {
       osvi.dwPlatformId = VER_PLATFORM_WIN32_WINDOWS;
       if (!VerifyVersionInfo(&osvi, VER_PLATFORMID, maskCondition))

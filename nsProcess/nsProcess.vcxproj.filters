@@ -24,6 +24,9 @@
     <ClCompile Include="..\nsis\pluginapi.c">
       <Filter>pluginapi</Filter>
     </ClCompile>
+    <ClCompile Include="..\nsis\crt.c">
+      <Filter>pluginapi</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\nsis\api.h">
